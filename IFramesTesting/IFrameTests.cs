@@ -24,7 +24,7 @@ namespace IFramesTesting
             driver.Quit();
         }
 
-        [Test]
+        [Test, Order(1)]
         public void HandleIframes_WithIndex()
         {
             WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
@@ -41,6 +41,46 @@ namespace IFramesTesting
                 Assert.IsTrue(link.Displayed);
                 Console.WriteLine(link.Text);
             }
+        }
+
+        [Test, Order(2)]
+        public void HandleIframes_WithId()
+        {
+            WebDriverWait wait = new WebDriverWait (driver, TimeSpan.FromSeconds(5));
+
+            wait.Until(ExpectedConditions.FrameToBeAvailableAndSwitchToIt(By.Id("result")));
+
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//button[@class='dropbtn']"))).Click();
+
+            var dropdownContent = wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.XPath("//div[@class='dropdown-content']")));
+
+            foreach(var element in dropdownContent)
+            {
+                Console.WriteLine(element.Text);
+                Assert.That(element.Displayed);
+            }
+        }
+
+        [Test, Order(3)]
+        public void HandleIframes_WithWebElement()
+        {
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+
+            var iFrameElement = wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("#result")));
+            driver.SwitchTo().Frame(iFrameElement);
+
+            wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//button[@class='dropbtn']"))).Click();
+
+            var dropdownContent = wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.XPath("//div[@class='dropdown-content']")));
+
+            foreach(var element in dropdownContent)
+            {
+                Console.WriteLine(element.Text);
+                Assert.That(element.Displayed);
+            }
+
+            driver.SwitchTo().DefaultContent();
+
         }
     }
 }
